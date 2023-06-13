@@ -16,6 +16,7 @@ export default function MyListView() {
   const [filteredNendoroids, setFilteredNendoroids] = useState(Array<Nendoroid>());
  const [selectedNendoroids, setSelectedNendoroids] = useState(Array<string>());
  const [showSelection, setShowSelection] = useState(false);
+ const [selectedYear, setSelectedYear] = useState('all');
  const [years, setYears] = useState<SelectItem[]>([{
   label: 'All',
   value: 'all'
@@ -48,11 +49,12 @@ export default function MyListView() {
 
   const onChangeSelect = (yearVal: string) => {
     console.log(yearVal);
+    setSelectedYear(yearVal)
       if(yearVal === 'all') { setFilteredNendoroids(nendoroids); 
          return;
       }
-      setFilteredNendoroids((sf) => sf.filter((item) => item.year?.toString() !== yearVal));
-
+      setFilteredNendoroids(nendoroids.filter((item) => item.year?.toString() === yearVal));
+    
   }
  
 
@@ -69,7 +71,8 @@ export default function MyListView() {
 
   
  const renderNendoroids = () => {
-   return [...nendoroids].slice(0,100).map((nendo, number) => <Card key={number} nendoroid={nendo} showSelection={showSelection} addOrRemove={addOrRemove}/> )
+  const mapArr = selectedYear === 'all' ? nendoroids : filteredNendoroids;
+   return [...mapArr].slice(0,100).map((nendo, number) => <Card key={number} nendoroid={nendo} showSelection={showSelection} addOrRemove={addOrRemove}/> )
  }
   
  const onClickSelection = () => setShowSelection((sel) => !sel);
@@ -80,7 +83,7 @@ export default function MyListView() {
       <Select
       label="Sort by"
       items={years}
-      value={years && years[0]?.value}
+      value={selectedYear}
       onChange={(e) => onChangeSelect(e.target.value)}
       />
       <section className='section-container'>
