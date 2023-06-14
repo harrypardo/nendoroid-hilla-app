@@ -1,4 +1,10 @@
-.section-container {
+.pagination {
+    display: flex;
+   justify-content: center;
+}
+
+
+.nendoroid-list {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;

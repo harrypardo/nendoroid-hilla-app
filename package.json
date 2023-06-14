@@ -3,6 +3,8 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@hilla/form": "2.0.5",
     "@hilla/frontend": "2.0.5",
     "@hilla/generator-typescript-cli": "2.0.5",
@@ -14,6 +16,7 @@
     "@hilla/generator-typescript-plugin-push": "2.0.5",
     "@hilla/generator-typescript-utils": "2.0.5",
     "@hilla/react-components": "2.0.3",
+    "@mui/material": "^5.13.5",
     "@polymer/polymer": "3.5.1",
     "@vaadin-component-factory/vcf-nav": "1.1.0",
     "@vaadin/bundles": "24.0.3",
@@ -84,7 +87,10 @@
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
     "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
-    "formik": "$formik"
+    "formik": "$formik",
+    "@emotion/react": "$@emotion/react",
+    "@emotion/styled": "$@emotion/styled",
+    "@mui/material": "$@mui/material"
   },
   "vaadin": {
     "dependencies": {
@@ -129,6 +135,6 @@
       "workbox-core": "6.5.4",
       "workbox-precaching": "6.5.4"
     },
-    "hash": "474b72281fa91996c039f20bfcec81933fcd095802be723ae50f5a4d3e713029"
+    "hash": "fc1d08b9f91872dbcd996a4680b7232ab97b50c8f73a6936299ebd197de6454c"
   }
 }

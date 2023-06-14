@@ -1,6 +1,3 @@
-
-import { Grid } from '@hilla/react-components/Grid.js';
-import { GridColumn } from '@hilla/react-components/GridColumn.js';
 import Card from 'Frontend/components/Card/Card.js';
 import Nendoroid from 'Frontend/generated/com/example/application/model/Nendoroid.js';
 
@@ -10,6 +7,8 @@ import { useEffect, useState } from 'react';
 import './styles.css';
 import { Button } from '@hilla/react-components/Button.js';
 import { Select, SelectItem } from '@hilla/react-components/Select.js';
+import { Pagination } from '@mui/material';
+import { getCount } from 'Frontend/generated/NendoroidEndpoint.js';
 
 export default function MyListView() {
   const [nendoroids, setNendoroids] = useState(Array<Nendoroid>());
@@ -21,39 +20,56 @@ export default function MyListView() {
   label: 'All',
   value: 'all'
  }]);
+ const size = 50;
+ const [total, setTotal] = useState(0);
+
+ const [page, setPage] = useState(1);
+
 
   useEffect(() => {
     (async () => {
-      const nendos = await NendoroidEndpoint.findAll();
-      setNendoroids(nendos);
+       await getNendoroids();
 
-      const yearset = new Set<number>();
-      nendos.forEach((n ) => { 
-        if(n.year)
-        yearset.add(n.year) })
-      
-      const yN =  Array.from(yearset);
-      const yn1 = yN.map((y) => {
+
+      const yearsRaw = await NendoroidEndpoint.findAllYears();
+      const totalCount = await NendoroidEndpoint.getCount('all');
+      setTotal(Math.ceil(totalCount / size));
+     
+      const yearsConverted = yearsRaw.map((y) => {
         return {
           label: `${y}`,
           value: `${y}`
         } 
       });
       
-      setYears([...years, ...yn1]);
+      setYears([{
+        label: 'All',
+        value: 'all'
+       }, ...yearsConverted]);
     })();
   
     return () => { };
   }, []);
 
+  useEffect( () => {
+   (async () => {getNendoroids();
+
+    setTotal(Math.floor(await getCount(selectedYear)  / size));
+  })();
+
+  }, [page, selectedYear])
+
+
+  const getNendoroids = async () => {
+    const nendos = await NendoroidEndpoint.findAllByYear(page, size, selectedYear);
+    setNendoroids(nendos);
+    return nendos;
+  }
+
 
   const onChangeSelect = (yearVal: string) => {
-    console.log(yearVal);
-    setSelectedYear(yearVal)
-      if(yearVal === 'all') { setFilteredNendoroids(nendoroids); 
-         return;
-      }
-      setFilteredNendoroids(nendoroids.filter((item) => item.year?.toString() === yearVal));
+    setSelectedYear(yearVal);
+    setPage(1);
     
   }
  
@@ -72,26 +88,42 @@ export default function MyListView() {
   
  const renderNendoroids = () => {
   const mapArr = selectedYear === 'all' ? nendoroids : filteredNendoroids;
-   return [...mapArr].slice(0,100).map((nendo, number) => <Card key={number} nendoroid={nendo} showSelection={showSelection} addOrRemove={addOrRemove}/> )
+   return [...nendoroids].slice(0,100).map((nendo, number) => <Card key={number} nendoroid={nendo} showSelection={showSelection} addOrRemove={addOrRemove}/> )
  }
   
- const onClickSelection = () => setShowSelection((sel) => !sel);
+ const onClickSelection = () => { 
+
+  setShowSelection((sel) => !sel); 
+                                  
+}
+
+const onChangePagination = (event: React.ChangeEvent<unknown>, page: number) => {
+     setPage(page);
+    
+}
   
   return (
     <>
-     <Button onClick={onClickSelection}>Start Selecting</Button>
+     <Button onClick={onClickSelection}>{showSelection ? "Stop Selecting" : "Start Selecting" } </Button>
       <Select
       label="Sort by"
       items={years}
       value={selectedYear}
       onChange={(e) => onChangeSelect(e.target.value)}
       />
-      <section className='section-container'>
+      
      
+   <div className='nendoroid-list'>
+   {renderNendoroids()}
    
-    {renderNendoroids()}
-       
-      </section>
+
+   </div>
+   <Pagination 
+      page={page}
+      className='pagination'
+      count={total}
+      color="primary" onChange={onChangePagination} />
+    
     </>
   );
 }
