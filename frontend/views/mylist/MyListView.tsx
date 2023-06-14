@@ -33,6 +33,7 @@ export default function MyListView() {
 
       const yearsRaw = await NendoroidEndpoint.findAllYears();
       const totalCount = await NendoroidEndpoint.getCount('all');
+      
       setTotal(Math.ceil(totalCount / size));
      
       const yearsConverted = yearsRaw.map((y) => {
@@ -52,16 +53,18 @@ export default function MyListView() {
   }, []);
 
   useEffect( () => {
-   (async () => {getNendoroids();
-
-    setTotal(Math.floor(await getCount(selectedYear)  / size));
+   (async () => {
+    await getNendoroids(selectedYear, page);
+    const t = await getCount(selectedYear);
+    const pages = Math.floor(t  / size);
+    setTotal(pages > 0 ? pages : 1);
   })();
 
   }, [page, selectedYear])
 
 
-  const getNendoroids = async () => {
-    const nendos = await NendoroidEndpoint.findAllByYear(page, size, selectedYear);
+  const getNendoroids = async (yearParam = selectedYear, pageParam = page) => {
+    const nendos = await NendoroidEndpoint.findAllByYear(pageParam, size, yearParam);
     setNendoroids(nendos);
     return nendos;
   }

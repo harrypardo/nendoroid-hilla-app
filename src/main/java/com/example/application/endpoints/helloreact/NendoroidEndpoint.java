@@ -45,11 +45,12 @@ public class NendoroidEndpoint {
         }
 
         public @Nonnull Page<@Nonnull Nendoroid> findAllByYear(@RequestParam int page, @RequestParam int size, @RequestParam String year) {
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page -1, size);
           
             if(year.equals("all")) {
                 return repository.findAll(pageable);
             } else {    
+
              return repository.findAllByYear(Integer.parseInt(year), pageable);
                 }
         }
