@@ -5,21 +5,16 @@ import { NendoroidEndpoint } from 'Frontend/generated/endpoints.js';
 import { useEffect, useState } from 'react';
 
 import './styles.css';
-import { Button } from '@hilla/react-components/Button.js';
-import { Select, SelectItem } from '@hilla/react-components/Select.js';
+
 import { Pagination } from '@mui/material';
 import { getCount } from 'Frontend/generated/NendoroidEndpoint.js';
+import Filter from './components/Filter.js';
 
 export default function MyListView() {
   const [nendoroids, setNendoroids] = useState(Array<Nendoroid>());
-  const [filteredNendoroids, setFilteredNendoroids] = useState(Array<Nendoroid>());
  const [selectedNendoroids, setSelectedNendoroids] = useState(Array<string>());
  const [showSelection, setShowSelection] = useState(false);
  const [selectedYear, setSelectedYear] = useState('all');
- const [years, setYears] = useState<SelectItem[]>([{
-  label: 'All',
-  value: 'all'
- }]);
  const size = 50;
  const [total, setTotal] = useState(0);
 
@@ -29,51 +24,43 @@ export default function MyListView() {
   useEffect(() => {
     (async () => {
        await getNendoroids();
-
-
-      const yearsRaw = await NendoroidEndpoint.findAllYears();
-      const totalCount = await NendoroidEndpoint.getCount('all');
-      
+      const totalCount = await NendoroidEndpoint.getCount('all', undefined);
+  
       setTotal(Math.ceil(totalCount / size));
      
-      const yearsConverted = yearsRaw.map((y) => {
-        return {
-          label: `${y}`,
-          value: `${y}`
-        } 
-      });
-      
-      setYears([{
-        label: 'All',
-        value: 'all'
-       }, ...yearsConverted]);
     })();
   
     return () => { };
   }, []);
 
   useEffect( () => {
-   (async () => {
-    await getNendoroids(selectedYear, page);
-    const t = await getCount(selectedYear);
-    const pages = Math.floor(t  / size);
-    setTotal(pages > 0 ? pages : 1);
-  })();
-
+    updatePage();
   }, [page, selectedYear])
 
 
-  const getNendoroids = async (yearParam = selectedYear, pageParam = page) => {
-    const nendos = await NendoroidEndpoint.findAllByYear(pageParam, size, yearParam);
+  const updatePage = (async (name?: string) => {
+    await getNendoroids(selectedYear, page, name);
+    const t = await getCount(selectedYear, name);
+    const pages = Math.floor(t  / size);
+    setTotal(pages > 0 ? pages : 1);
+  });
+
+
+  const getNendoroids = async (yearParam = selectedYear, pageParam = page, name?: string) => {
+    const nendos = await NendoroidEndpoint.findAllBy(pageParam, size, yearParam, name);
     setNendoroids(nendos);
     return nendos;
   }
 
 
-  const onChangeSelect = (yearVal: string) => {
+  const onChangeYear = (yearVal: string) => {
     setSelectedYear(yearVal);
     setPage(1);
-    
+  }
+
+
+  const onSubmitSearch = (value:string) => {
+    updatePage(value);
   }
  
 
@@ -90,15 +77,11 @@ export default function MyListView() {
 
   
  const renderNendoroids = () => {
-  const mapArr = selectedYear === 'all' ? nendoroids : filteredNendoroids;
+  
    return [...nendoroids].slice(0,100).map((nendo, number) => <Card key={number} nendoroid={nendo} showSelection={showSelection} addOrRemove={addOrRemove}/> )
  }
   
- const onClickSelection = () => { 
 
-  setShowSelection((sel) => !sel); 
-                                  
-}
 
 const onChangePagination = (event: React.ChangeEvent<unknown>, page: number) => {
      setPage(page);
@@ -106,17 +89,11 @@ const onChangePagination = (event: React.ChangeEvent<unknown>, page: number) => 
 }
   
   return (
-    <>
-     <Button onClick={onClickSelection}>{showSelection ? "Stop Selecting" : "Start Selecting" } </Button>
-      <Select
-      label="Sort by"
-      items={years}
-      value={selectedYear}
-      onChange={(e) => onChangeSelect(e.target.value)}
-      />
-      
-     
+    <div className='container'>
+   
+     <Filter selectYear={onChangeYear} year={selectedYear} onSubmitSearch={onSubmitSearch}/>
    <div className='nendoroid-list'>
+    
    {renderNendoroids()}
    
 
@@ -127,6 +104,6 @@ const onChangePagination = (event: React.ChangeEvent<unknown>, page: number) => 
       count={total}
       color="primary" onChange={onChangePagination} />
     
-    </>
+    </div>
   );
 }

@@ -48,11 +48,17 @@
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: contain;
+  object-fit: contain !important;
   object-position: center;
   max-height: 400px;
   transition: 200ms transform ease-in-out;
+  
   &:hover {
     transform: scale(1.025);
   }
+}
+
+
+.card-container {
+  background-color: #EEEEEE !important;
 }

@@ -1,0 +1,9 @@
+.filter-container {
+    display: flex;
+    gap: 20px;
+    margin-left: 30px;
+}
+
+.search {
+    margin-top: 35px !important;
+}

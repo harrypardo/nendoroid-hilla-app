@@ -16,6 +16,7 @@
     "@hilla/generator-typescript-plugin-push": "2.0.5",
     "@hilla/generator-typescript-utils": "2.0.5",
     "@hilla/react-components": "2.0.3",
+    "@mui/icons-material": "^5.14.1",
     "@mui/material": "^5.13.5",
     "@polymer/polymer": "3.5.1",
     "@vaadin-component-factory/vcf-nav": "1.1.0",
@@ -90,7 +91,8 @@
     "formik": "$formik",
     "@emotion/react": "$@emotion/react",
     "@emotion/styled": "$@emotion/styled",
-    "@mui/material": "$@mui/material"
+    "@mui/material": "$@mui/material",
+    "@mui/icons-material": "$@mui/icons-material"
   },
   "vaadin": {
     "dependencies": {
@@ -135,6 +137,6 @@
       "workbox-core": "6.5.4",
       "workbox-precaching": "6.5.4"
     },
-    "hash": "fc1d08b9f91872dbcd996a4680b7232ab97b50c8f73a6936299ebd197de6454c"
+    "hash": "6eeefe9cd229f9c79f3db348657592d1736908f62d05d54b3540459988b68aa0"
   }
 }
